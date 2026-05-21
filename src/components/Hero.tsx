@@ -47,12 +47,12 @@ export default function Hero() {
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-none text-[var(--foreground)]">
             Miguel
             <br />
-            González
+            Gonzalez
           </h1>
 
           {/* Title */}
           <p className="text-xl sm:text-2xl text-[var(--muted)] font-light max-w-xl">
-            Full Stack Developer building fast, purposeful web applications.
+            Developer building fast, purposeful web applications.
           </p>
 
           {/* CTA buttons */}
@@ -62,6 +62,12 @@ export default function Hero() {
               className="px-6 py-3 rounded-full bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors"
             >
               View Work
+            </a>
+            <a
+              href="#about"
+              className="px-6 py-3 rounded-full border border-[var(--border)] text-sm font-medium text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
+            >
+              Experience
             </a>
             <a
               href="#resume"
@@ -78,7 +84,6 @@ export default function Hero() {
           </div>
         </motion.div>
       </div>
-
     </section>
   );
 }
