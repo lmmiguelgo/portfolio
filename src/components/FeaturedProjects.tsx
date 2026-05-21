@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const projects = [
@@ -9,39 +10,47 @@ const projects = [
     description:
       "Professional business website for Gordon & Associates, featuring a clean presentation of services, team, and contact information.",
     tags: ["Web Design", "Business", "Responsive"],
-    gradient: "from-indigo-500/20 to-purple-500/20",
+    image: "/projects/gordon-associates.png",
   },
   {
-    name: "SecSolInt",
+    name: "Security Solutions Integration",
     url: "https://secsolint.com",
     description:
       "Corporate web presence for a security solutions company, built to communicate trust and professionalism to enterprise clients.",
     tags: ["Corporate", "Security", "Web Dev"],
-    gradient: "from-cyan-500/20 to-blue-500/20",
+    image: "/projects/security-solutions.png",
   },
   {
-    name: "Aizen Fire",
+    name: "Aizen Fire Protection",
     url: "https://aizenfire.com",
     description:
       "Dynamic website for Aizen Fire, designed to showcase services and engage visitors with a bold, modern layout.",
-    tags: ["Web Design", "Services", "Modern UI"],
-    gradient: "from-orange-500/20 to-red-500/20",
+    tags: ["Web Design", "WordPress", "Modern UI"],
+    image: "/projects/aizenfire.png",
   },
   {
     name: "Q-Metrx",
     url: "https://q-metrx.com",
     description:
       "Platform for Q-Metrx, focused on delivering a clear and effective digital experience that supports the company's core offering.",
-    tags: ["Platform", "Web App", "TypeScript"],
-    gradient: "from-emerald-500/20 to-teal-500/20",
+    tags: ["Platform", "WordPress", "Integrations"],
+    image: "/projects/q-metrx.png",
   },
   {
-    name: "IcsTek",
+    name: "ICSTEK",
     url: "https://icstek.com",
     description:
-      "Technology company website for IcsTek, presenting their solutions portfolio with a professional and accessible interface.",
-    tags: ["Tech", "Corporate", "Web Dev"],
-    gradient: "from-violet-500/20 to-fuchsia-500/20",
+      "Technology company website for ICS, presenting their solutions portfolio, integrating remote support app into the platform.",
+    tags: ["Tech", "Corporate", "Web Dev", "WordPress"],
+    image: "/projects/icstek.png",
+  },
+  {
+    name: "Rhinos Rugby Club",
+    url: "https://rhinosrc.com",
+    description:
+      "presentation / E-commerce website for Rhinos Rugby Club, presenting the club, categories and products.",
+    tags: ["Next JS", "Rugby", "Web Dev"],
+    image: "/projects/rhinos.png",
   },
 ];
 
@@ -80,20 +89,15 @@ export default function FeaturedProjects() {
                 transition={{ duration: 0.4, delay: i * 0.08 }}
                 className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--card-hover)] hover:border-[var(--accent)]/40 transition-all duration-300 overflow-hidden"
               >
-                {/* Gradient thumbnail */}
-                <div
-                  className={`h-40 md:h-24 bg-gradient-to-br ${project.gradient} flex items-center justify-center relative`}
-                >
-                  <div className="absolute inset-0 opacity-40"
-                    style={{
-                      backgroundImage: "linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)",
-                      backgroundSize: "24px 24px",
-                      opacity: 0.04,
-                    }}
+                {/* Screenshot thumbnail */}
+                <div className="relative h-28 md:h-32 overflow-hidden">
+                  <Image
+                    src={project.image}
+                    alt={project.name}
+                    fill
+                    className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
-                  <span className="font-mono text-xs text-[var(--muted)] tracking-widest opacity-60">
-                    {new URL(project.url).hostname}
-                  </span>
                 </div>
 
                 {/* Content */}
@@ -125,7 +129,14 @@ export default function FeaturedProjects() {
                     className="mt-auto flex items-center gap-2 text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
                   >
                     View Site
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                       <polyline points="15 3 21 3 21 9" />
                       <line x1="10" y1="14" x2="21" y2="3" />
