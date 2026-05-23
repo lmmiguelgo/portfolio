@@ -1,25 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLanguage } from "./LanguageProvider";
 
 const skills = [
-  "WordPress", "React", "Next.js", "Azure", "Firebase", "Web Applications",
-  "Hosting Management", "Professional Email", "DNS & Domains",
-];
-
-const stats = [
-  { label: "Based in", value: "United States", icon: "🇺🇸" },
-  { label: "Languages", value: "English & Spanish", icon: "🇺🇸🇪🇸" },
-  { label: "Focus", value: "Web Applications", icon: "🌐" },
-  {
-    label: "Status",
-    value: "Available for projects",
-    icon: null,
-    available: true,
-  },
+  "WordPress", "React", "Next.js", "Azure", "Firebase",
+  "Web Applications", "Hosting Management", "Professional Email", "DNS & Domains",
 ];
 
 export default function About() {
+  const { t } = useLanguage();
+  const a = t.about;
+
   return (
     <section id="about" className="py-24 px-6 md:py-0">
       <div className="max-w-6xl mx-auto">
@@ -30,15 +22,13 @@ export default function About() {
           transition={{ duration: 0.6 }}
           className="flex flex-col gap-16"
         >
-          {/* Section label */}
           <div className="flex items-center gap-3">
             <span className="w-8 h-px bg-[var(--accent)]" />
             <span className="font-mono text-xs text-[var(--accent)] tracking-widest uppercase">
-              About & Experience
+              {a.label}
             </span>
           </div>
 
-          {/* ── Experience hero card ── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -46,62 +36,39 @@ export default function About() {
             transition={{ duration: 0.5 }}
             className="relative rounded-3xl border border-[var(--border)] bg-[var(--card)] overflow-hidden p-8 sm:p-10"
           >
-            {/* Subtle background glow */}
             <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[var(--accent)]/5 blur-3xl" />
-
             <div className="relative flex flex-col gap-8">
-              {/* Top row */}
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex flex-col gap-1">
                   <span className="font-mono text-xs text-[var(--accent)] tracking-widest uppercase">
-                    Work Experience
+                    {a.workLabel}
                   </span>
                   <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mt-2">
-                    Web Developer
+                    {a.role}
                   </h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xl font-semibold text-[var(--accent)]">
-                      ICSTEK
-                    </span>
+                    <span className="text-xl font-semibold text-[var(--accent)]">ICS</span>
                     <span className="text-[var(--muted)]">·</span>
-                    <span className="text-sm text-[var(--muted)]">
-                      Tarzana, California
-                    </span>
+                    <span className="text-sm text-[var(--muted)]">{a.location}</span>
                   </div>
                 </div>
-
-                {/* Date badge */}
                 <div className="shrink-0 self-start px-4 py-2 rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 text-[var(--accent)] font-mono text-sm font-medium">
-                  2020 — 2023
+                  {a.dateRange}
                 </div>
               </div>
 
-              {/* Responsibilities */}
               <div className="grid sm:grid-cols-2 gap-3">
-                {[
-                  "Managed hosting infrastructure and server configurations",
-                  "Set up and maintained professional email accounts",
-                  "Built and maintained websites with WordPress, React & Next.js",
-                  "Integrated Azure cloud services into client platforms",
-                  "Implemented Firebase backend for web applications",
-                  "Developed custom web applications from scratch",
-                ].map((item) => (
+                {a.responsibilities.map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
-                    <span className="text-sm text-[var(--muted)] leading-relaxed">
-                      {item}
-                    </span>
+                    <span className="text-sm text-[var(--muted)] leading-relaxed">{item}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Skill tags */}
               <div className="flex flex-wrap gap-2">
                 {skills.map((s) => (
-                  <span
-                    key={s}
-                    className="text-xs px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--background)] text-[var(--muted)] hover:border-[var(--accent)]/50 hover:text-[var(--foreground)] transition-colors cursor-default"
-                  >
+                  <span key={s} className="text-xs px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--background)] text-[var(--muted)] hover:border-[var(--accent)]/50 hover:text-[var(--foreground)] transition-colors cursor-default">
                     {s}
                   </span>
                 ))}
@@ -109,34 +76,18 @@ export default function About() {
             </div>
           </motion.div>
 
-          {/* ── Bio + Stats ── */}
           <div className="grid md:grid-cols-2 gap-12 items-start">
-            {/* Bio */}
             <div className="flex flex-col gap-5">
               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--foreground)]">
-                Building things that work — and look good doing it.
+                {a.bioHeading}
               </h3>
               <div className="flex flex-col gap-4 text-[var(--muted)] leading-relaxed text-sm">
-                <p>
-                  I&apos;m a full stack developer with a passion for crafting
-                  clean, performant web applications from the ground up. I care
-                  about both the code and the experience it produces.
-                </p>
-                <p>
-                  Whether it&apos;s a business site, a SaaS platform, or a
-                  custom tool, I focus on shipping things that are fast,
-                  maintainable, and built to grow.
-                </p>
-                <p>
-                  Fluent in English and Spanish — I&apos;m comfortable working
-                  with clients and teams across languages and time zones.
-                </p>
+                {a.bio.map((p, i) => <p key={i}>{p}</p>)}
               </div>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-2 gap-3">
-              {stats.map((item, i) => (
+              {a.stats.map((item, i) => (
                 <motion.div
                   key={item.label}
                   initial={{ opacity: 0, y: 16 }}
@@ -158,9 +109,7 @@ export default function About() {
                       {item.label}
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-[var(--foreground)]">
-                    {item.value}
-                  </span>
+                  <span className="text-sm font-medium text-[var(--foreground)]">{item.value}</span>
                 </motion.div>
               ))}
             </div>

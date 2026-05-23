@@ -7,7 +7,7 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
 gsap.registerPlugin(ScrollToPlugin);
 
-const SECTIONS = ["hero", "about", "stack", "projects", "resume", "contact"];
+const SECTIONS = ["hero", "about", "projects", "stack", "resume", "contact"];
 const DURATION = 0.8;
 const EASE = "power3.inOut";
 const WHEEL_THRESHOLD = 8;

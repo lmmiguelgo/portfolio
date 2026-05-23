@@ -10,24 +10,23 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "Missing required fields." }, { status: 400 });
     }
 
-    const credentials = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
     const calendarId = process.env.GOOGLE_CALENDAR_ID;
 
-    if (!credentials || !calendarId) {
+    if (!clientId || !clientSecret || !refreshToken || !calendarId) {
       return Response.json(
         { error: "Calendar integration not configured." },
         { status: 503 }
       );
     }
 
-    const auth = new google.auth.GoogleAuth({
-      credentials: JSON.parse(credentials),
-      scopes: ["https://www.googleapis.com/auth/calendar"],
-    });
+    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
+    oauth2Client.setCredentials({ refresh_token: refreshToken });
 
-    const calendar = google.calendar({ version: "v3", auth });
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
-    // Build start/end datetime (1 hour duration)
     const startDateTime = new Date(`${date}T${time}:00`);
     const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
 
@@ -41,11 +40,11 @@ export async function POST(request: NextRequest) {
           : `Interview request from ${name} (${email})`,
         start: {
           dateTime: startDateTime.toISOString(),
-          timeZone: "America/Puerto_Rico",
+          timeZone: "America/Los_Angeles",
         },
         end: {
           dateTime: endDateTime.toISOString(),
-          timeZone: "America/Puerto_Rico",
+          timeZone: "America/Los_Angeles",
         },
         attendees: [{ email, displayName: name }],
         conferenceData: {

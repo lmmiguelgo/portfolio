@@ -1,4 +1,9 @@
+"use client";
+
+import { useLanguage } from "./LanguageProvider";
+
 export default function Footer() {
+  const { t } = useLanguage();
   const year = new Date().getFullYear();
 
   return (
@@ -7,7 +12,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-[var(--muted)]">
           <span className="font-mono font-semibold text-[var(--accent)]">MG.</span>
           <span className="hidden sm:block opacity-30">—</span>
-          <span>Miguel González · Full Stack Developer</span>
+          <span>Miguel González · {t.footer.role}</span>
         </div>
 
         <div className="flex items-center gap-4 text-sm text-[var(--muted)]">

@@ -3,24 +3,25 @@
 import { motion } from "framer-motion";
 import {
   SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiFramer,
+  SiGreensock,
   SiNodedotjs, SiFirebase, SiGit, SiGithub, SiVercel, SiDocker,
   SiLinux, SiStripe, SiWordpress, SiGoogle,
 } from "react-icons/si";
 import { FiCloud } from "react-icons/fi";
+import { useLanguage } from "./LanguageProvider";
 
-const categories = [
+const CATEGORIES = [
   {
-    label: "Frontend",
     items: [
       { name: "React", icon: SiReact, color: "#61DAFB" },
-      { name: "Next.js", icon: SiNextdotjs, color: "#ffffff" },
+      { name: "Next.js", icon: SiNextdotjs, color: "var(--icon-white)" },
       { name: "TypeScript", icon: SiTypescript, color: "#3178C6" },
       { name: "Tailwind CSS", icon: SiTailwindcss, color: "#38BDF8" },
-      { name: "Framer Motion", icon: SiFramer, color: "#ffffff" },
+      { name: "Framer Motion", icon: SiFramer, color: "var(--icon-white)" },
+      { name: "GSAP", icon: SiGreensock, color: "#88CE02" },
     ],
   },
   {
-    label: "Backend",
     items: [
       { name: "Node.js", icon: SiNodedotjs, color: "#5FA04E" },
       { name: "Firebase", icon: SiFirebase, color: "#FFCA28" },
@@ -28,18 +29,16 @@ const categories = [
     ],
   },
   {
-    label: "Tools & Infra",
     items: [
       { name: "Git", icon: SiGit, color: "#F05032" },
-      { name: "GitHub", icon: SiGithub, color: "#ffffff" },
-      { name: "Vercel", icon: SiVercel, color: "#ffffff" },
+      { name: "GitHub", icon: SiGithub, color: "var(--icon-white)" },
+      { name: "Vercel", icon: SiVercel, color: "var(--icon-white)" },
       { name: "Docker", icon: SiDocker, color: "#2496ED" },
       { name: "Linux", icon: SiLinux, color: "#FCC624" },
       { name: "Azure", icon: FiCloud, color: "#0078D4" },
     ],
   },
   {
-    label: "Integrations",
     items: [
       { name: "Google APIs", icon: SiGoogle, color: "#4285F4" },
       { name: "Stripe", icon: SiStripe, color: "#635BFF" },
@@ -48,6 +47,9 @@ const categories = [
 ];
 
 export default function TechStack() {
+  const { t } = useLanguage();
+  const s = t.stack;
+
   return (
     <section id="stack" className="py-24 px-6 bg-[var(--card)] md:py-0">
       <div className="max-w-6xl mx-auto">
@@ -58,24 +60,22 @@ export default function TechStack() {
           transition={{ duration: 0.6 }}
           className="flex flex-col gap-12"
         >
-          {/* Header */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <span className="w-8 h-px bg-[var(--accent)]" />
               <span className="font-mono text-xs text-[var(--accent)] tracking-widest uppercase">
-                Stack
+                {s.label}
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--foreground)]">
-              Technologies I work with
+              {s.heading}
             </h2>
           </div>
 
-          {/* Categories */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {categories.map((cat, ci) => (
+            {CATEGORIES.map((cat, ci) => (
               <motion.div
-                key={cat.label}
+                key={ci}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -83,7 +83,7 @@ export default function TechStack() {
                 className="flex flex-col gap-5"
               >
                 <span className="text-xs font-mono text-[var(--accent)] uppercase tracking-widest">
-                  {cat.label}
+                  {s.categories[ci]}
                 </span>
                 <div className="flex flex-col gap-2">
                   {cat.items.map((item) => {

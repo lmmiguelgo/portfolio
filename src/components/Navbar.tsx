@@ -3,30 +3,41 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
+import { useLanguage } from "./LanguageProvider";
 import {
   FiHome, FiUser, FiCode, FiBriefcase,
   FiFileText, FiMail, FiSun, FiMoon,
 } from "react-icons/fi";
 
-const NAV = [
-  { id: "hero",     label: "Home",     icon: FiHome },
-  { id: "about",    label: "About",    icon: FiUser },
-  { id: "stack",    label: "Stack",    icon: FiCode },
-  { id: "projects", label: "Projects", icon: FiBriefcase },
-  { id: "resume",   label: "Resume",   icon: FiFileText },
-  { id: "contact",  label: "Contact",  icon: FiMail },
-];
+const NAV_IDS = [
+  { id: "hero",     icon: FiHome },
+  { id: "about",    icon: FiUser },
+  { id: "projects", icon: FiBriefcase },
+  { id: "stack",    icon: FiCode },
+  { id: "resume",   icon: FiFileText },
+  { id: "contact",  icon: FiMail },
+] as const;
 
 export default function Navbar() {
   const { theme, toggle } = useTheme();
+  const { lang, t, toggleLang } = useLanguage();
   const [activeId, setActiveId] = useState("hero");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const navLabels: Record<string, string> = {
+    hero: t.nav.home,
+    about: t.nav.about,
+    projects: t.nav.projects,
+    stack: t.nav.stack,
+    resume: t.nav.resume,
+    contact: t.nav.contact,
+  };
 
   useEffect(() => {
     const sync = () => {
       const mid = window.innerHeight / 2;
       let active = "hero";
-      NAV.forEach(({ id }) => {
+      NAV_IDS.forEach(({ id }) => {
         const el = document.getElementById(id);
         if (!el) return;
         if (el.getBoundingClientRect().top <= mid) active = id;
@@ -53,8 +64,9 @@ export default function Navbar() {
 
         {/* Nav items */}
         <div className="flex flex-col items-center gap-1.5">
-          {NAV.map(({ id, label, icon: Icon }) => {
+          {NAV_IDS.map(({ id, icon: Icon }) => {
             const isActive = activeId === id;
+            const label = navLabels[id];
             return (
               <div
                 key={id}
@@ -62,7 +74,6 @@ export default function Navbar() {
                 onMouseEnter={() => setHoveredId(id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                {/* Active bar on the left edge */}
                 <AnimatePresence>
                   {isActive && (
                     <motion.span
@@ -76,7 +87,6 @@ export default function Navbar() {
                   )}
                 </AnimatePresence>
 
-                {/* Icon button */}
                 <motion.a
                   href={`#${id}`}
                   aria-label={label}
@@ -92,7 +102,6 @@ export default function Navbar() {
                   <Icon size={17} />
                 </motion.a>
 
-                {/* Tooltip label */}
                 <AnimatePresence>
                   {hoveredId === id && (
                     <motion.div
@@ -118,27 +127,52 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Theme toggle */}
-        <motion.button
-          onClick={toggle}
-          aria-label="Toggle theme"
-          className="w-10 h-10 flex items-center justify-center rounded-xl border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--accent)]/50 transition-colors"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.92 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={theme}
-              initial={{ opacity: 0, rotate: -45 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 45 }}
-              transition={{ duration: 0.18 }}
-            >
-              {theme === "dark" ? <FiSun size={16} /> : <FiMoon size={16} />}
-            </motion.span>
-          </AnimatePresence>
-        </motion.button>
+        {/* Bottom controls */}
+        <div className="flex flex-col items-center gap-2">
+          {/* Language toggle */}
+          <motion.button
+            onClick={toggleLang}
+            aria-label="Toggle language"
+            className="w-10 h-10 flex items-center justify-center rounded-xl border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--accent)]/50 transition-colors font-mono text-[10px] font-semibold tracking-wider"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={lang}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.15 }}
+              >
+                {lang === "en" ? "EN" : "ES"}
+              </motion.span>
+            </AnimatePresence>
+          </motion.button>
+
+          {/* Theme toggle */}
+          <motion.button
+            onClick={toggle}
+            aria-label="Toggle theme"
+            className="w-10 h-10 flex items-center justify-center rounded-xl border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--accent)]/50 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={theme}
+                initial={{ opacity: 0, rotate: -45 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 45 }}
+                transition={{ duration: 0.18 }}
+              >
+                {theme === "dark" ? <FiSun size={16} /> : <FiMoon size={16} />}
+              </motion.span>
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </nav>
 
       {/* ── Mobile top bar ────────────────────────────────────── */}
@@ -150,13 +184,22 @@ export default function Navbar() {
           >
             MG<span className="text-[var(--foreground)]">.</span>
           </a>
-          <button
-            onClick={toggle}
-            aria-label="Toggle theme"
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-[var(--border)] text-[var(--muted)]"
-          >
-            {theme === "dark" ? <FiSun size={14} /> : <FiMoon size={14} />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleLang}
+              aria-label="Toggle language"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-[var(--border)] text-[var(--muted)] font-mono text-[10px] font-semibold"
+            >
+              {lang === "en" ? "EN" : "ES"}
+            </button>
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-[var(--border)] text-[var(--muted)]"
+            >
+              {theme === "dark" ? <FiSun size={14} /> : <FiMoon size={14} />}
+            </button>
+          </div>
         </div>
       </header>
     </>

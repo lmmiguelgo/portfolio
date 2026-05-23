@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import DatePicker from "./DatePicker";
+import { useLanguage } from "./LanguageProvider";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -15,20 +17,85 @@ const schema = z.object({
 });
 
 type FormData = z.infer<typeof schema>;
-
 type Status = "idle" | "loading" | "success" | "error";
 
+function getAvailableSlots(dateStr: string): string[] {
+  if (!dateStr) return [];
+  const date = new Date(dateStr + "T00:00:00");
+  const day = date.getDay(); // 0=Sun, 6=Sat
+  const isWeekend = day === 0 || day === 6;
+
+  if (isWeekend) {
+    const slots: string[] = [];
+    for (let h = 9; h <= 19; h++) {
+      slots.push(`${String(h).padStart(2, "0")}:00`);
+      if (h < 19) slots.push(`${String(h).padStart(2, "0")}:30`);
+    }
+    return slots;
+  }
+
+  // Weekdays: 12–2 PM and 6–8 PM (1-hour interviews)
+  return ["12:00", "12:30", "13:00", "18:00", "18:30", "19:00"];
+}
+
+function formatSlot(time: string): string {
+  const [h, m] = time.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return `${h12}:${String(m).padStart(2, "0")} ${period}`;
+}
+
+const CHECK = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="var(--accent)"
+    strokeWidth="2"
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const CLOCK = (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
 export default function Contact() {
+  const { t } = useLanguage();
+  const c = t.contact;
   const [status, setStatus] = useState<Status>("idle");
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const today = new Date().toISOString().split("T")[0];
+  const selectedDate = watch("date");
+  const selectedTime = watch("time");
+  const availableSlots = getAvailableSlots(selectedDate);
+
+  useEffect(() => {
+    if (selectedTime && !availableSlots.includes(selectedTime)) {
+      setValue("time", "");
+    }
+  }, [selectedDate, selectedTime, availableSlots, setValue]);
 
   async function onSubmit(data: FormData) {
     setStatus("loading");
@@ -61,42 +128,51 @@ export default function Contact() {
             <div className="flex items-center gap-3">
               <span className="w-8 h-px bg-[var(--accent)]" />
               <span className="font-mono text-xs text-[var(--accent)] tracking-widest uppercase">
-                Contact
+                {c.label}
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--foreground)]">
-              Schedule an Interview
+              {c.heading}
             </h2>
             <p className="text-[var(--muted)] leading-relaxed max-w-sm">
-              Fill out the form and I&apos;ll receive a calendar invite directly.
-              A Google Meet link will be included automatically.
+              {c.description}
             </p>
 
-            <div className="flex flex-col gap-3 mt-4">
-              <div className="flex items-center gap-3 text-sm text-[var(--muted)]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Google Calendar event created automatically
+            {/* Availability card */}
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 flex flex-col gap-4">
+              <div className="flex items-center gap-2 text-xs font-mono text-[var(--accent)] uppercase tracking-widest">
+                {CLOCK}
+                {c.availability.title}
               </div>
-              <div className="flex items-center gap-3 text-sm text-[var(--muted)]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Email invite sent to both parties
+              <div className="flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-4">
+                  <span className="text-sm font-medium text-[var(--foreground)] whitespace-nowrap">
+                    {c.availability.weekday}
+                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-sm text-[var(--muted)]">{c.availability.weekdaySlot1}</span>
+                    <span className="text-sm text-[var(--muted)]">{c.availability.weekdaySlot2}</span>
+                  </div>
+                </div>
+                <div className="h-px bg-[var(--border)]" />
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm font-medium text-[var(--foreground)]">
+                    {c.availability.weekend}
+                  </span>
+                  <span className="text-sm text-[var(--muted)]">{c.availability.weekendSlot}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3 text-sm text-[var(--muted)]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Google Meet link included
-              </div>
-              <div className="flex items-center gap-3 text-sm text-[var(--muted)]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Available in English &amp; Spanish
-              </div>
+              <p className="text-xs text-[var(--muted)] opacity-70">
+                {c.availability.timezone}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              {c.features.map((f) => (
+                <div key={f} className="flex items-center gap-3 text-sm text-[var(--muted)]">
+                  {CHECK} {f}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -105,51 +181,67 @@ export default function Contact() {
             {status === "success" ? (
               <div className="flex flex-col items-center gap-4 py-8 text-center">
                 <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="2"
+                  >
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-[var(--foreground)]">Interview Scheduled!</h3>
+                <h3 className="text-lg font-semibold text-[var(--foreground)]">
+                  {c.success.heading}
+                </h3>
                 <p className="text-sm text-[var(--muted)]">
-                  Check your email — a calendar invite with a Google Meet link has been sent.
+                  {c.success.body}
                 </p>
                 <button
                   onClick={() => setStatus("idle")}
                   className="mt-2 text-sm text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
                 >
-                  Schedule another
+                  {c.success.again}
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-5"
+              >
                 {/* Name */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-mono text-[var(--muted)] uppercase tracking-wider">
-                    Full Name
+                    {c.form.name}
                   </label>
                   <input
                     {...register("name")}
-                    placeholder="Jane Smith"
+                    placeholder={c.form.namePlaceholder}
                     className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
                   />
                   {errors.name && (
-                    <span className="text-xs text-red-400">{errors.name.message}</span>
+                    <span className="text-xs text-red-400">
+                      {errors.name.message}
+                    </span>
                   )}
                 </div>
 
                 {/* Email */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-mono text-[var(--muted)] uppercase tracking-wider">
-                    Email
+                    {c.form.email}
                   </label>
                   <input
                     {...register("email")}
                     type="email"
-                    placeholder="jane@company.com"
+                    placeholder={c.form.emailPlaceholder}
                     className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
                   />
                   {errors.email && (
-                    <span className="text-xs text-red-400">{errors.email.message}</span>
+                    <span className="text-xs text-red-400">
+                      {errors.email.message}
+                    </span>
                   )}
                 </div>
 
@@ -157,29 +249,41 @@ export default function Contact() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-mono text-[var(--muted)] uppercase tracking-wider">
-                      Date
+                      {c.form.date}
                     </label>
-                    <input
-                      {...register("date")}
-                      type="date"
+                    <DatePicker
+                      value={selectedDate || ""}
+                      onChange={(date) => setValue("date", date, { shouldValidate: true })}
                       min={today}
-                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)] transition-colors"
                     />
                     {errors.date && (
-                      <span className="text-xs text-red-400">{errors.date.message}</span>
+                      <span className="text-xs text-red-400">
+                        {errors.date.message}
+                      </span>
                     )}
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-mono text-[var(--muted)] uppercase tracking-wider">
-                      Time
+                      {c.form.time}
                     </label>
-                    <input
+                    <select
                       {...register("time")}
-                      type="time"
-                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)] transition-colors"
-                    />
+                      disabled={!selectedDate}
+                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {selectedDate ? c.form.timePlaceholder : c.form.timeNoDate}
+                      </option>
+                      {availableSlots.map((slot) => (
+                        <option key={slot} value={slot}>
+                          {formatSlot(slot)}
+                        </option>
+                      ))}
+                    </select>
                     {errors.time && (
-                      <span className="text-xs text-red-400">{errors.time.message}</span>
+                      <span className="text-xs text-red-400">
+                        {errors.time.message}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -187,23 +291,21 @@ export default function Contact() {
                 {/* Message */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-mono text-[var(--muted)] uppercase tracking-wider">
-                    Message{" "}
+                    {c.form.message}{" "}
                     <span className="normal-case tracking-normal text-[var(--muted)] opacity-60">
-                      (optional)
+                      {c.form.messageOptional}
                     </span>
                   </label>
                   <textarea
                     {...register("message")}
                     rows={3}
-                    placeholder="Anything you'd like me to know beforehand..."
+                    placeholder={c.form.messagePlaceholder}
                     className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] transition-colors resize-none"
                   />
                 </div>
 
                 {status === "error" && (
-                  <p className="text-xs text-red-400">
-                    Something went wrong. Please try again or contact me directly.
-                  </p>
+                  <p className="text-xs text-red-400">{c.form.error}</p>
                 )}
 
                 <button
@@ -211,7 +313,7 @@ export default function Contact() {
                   disabled={status === "loading"}
                   className="w-full py-3 rounded-xl bg-[var(--accent)] text-white text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {status === "loading" ? "Scheduling…" : "Schedule Interview"}
+                  {status === "loading" ? c.form.submitting : c.form.submit}
                 </button>
               </form>
             )}

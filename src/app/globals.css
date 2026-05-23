@@ -11,17 +11,19 @@
   --border: #27272a;
   --card: #111111;
   --card-hover: #18181b;
+  --icon-white: #ffffff;
 }
 
 .light {
-  --background: #fafafa;
-  --foreground: #0a0a0a;
+  --icon-white: #09090b;
+  --background: #e8e8ed;
+  --foreground: #09090b;
   --accent: #4f46e5;
   --accent-hover: #6366f1;
-  --muted: #71717a;
-  --border: #e4e4e7;
+  --muted: #58585f;
+  --border: #c2c2cc;
   --card: #ffffff;
-  --card-hover: #f4f4f5;
+  --card-hover: #f2f2f6;
 }
 
 @theme inline {
