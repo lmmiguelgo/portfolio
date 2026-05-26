@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Miguel González — Full Stack Developer",
+  title: "Miguel González — Developer",
   description:
-    "Portfolio of Miguel González, a full stack developer building web applications.",
+    "Portfolio of Miguel González, a developer building web applications.",
 };
 
 export default function RootLayout({
@@ -49,7 +49,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] md:pl-16">
-        <ThemeProvider><LanguageProvider>{children}</LanguageProvider></ThemeProvider>
+        <ThemeProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
