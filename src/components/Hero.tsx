@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useLanguage } from "./LanguageProvider";
+import { FaLinkedin, FaGithub, FaEnvelope, FaPhone } from "react-icons/fa";
 
 export default function Hero() {
   const { t } = useLanguage();
@@ -63,6 +64,34 @@ export default function Hero() {
             </a>
             <a href="#contact" className="px-6 py-3 rounded-full border border-[var(--border)] text-sm font-medium text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors">
               {t.hero.cta.schedule}
+            </a>
+          </div>
+
+          <div className="flex items-center gap-5 pt-2">
+            <a
+              href="https://www.linkedin.com/in/immiguelgo/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors"
+            >
+              <FaLinkedin size={22} />
+            </a>
+            <a
+              href="https://github.com/lmmiguelgo"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors"
+            >
+              <FaGithub size={22} />
+            </a>
+            <a
+              href="mailto:lmiguelgrubio@gmail.com"
+              aria-label="Email"
+              className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors"
+            >
+              <FaEnvelope size={22} />
             </a>
           </div>
         </motion.div>
