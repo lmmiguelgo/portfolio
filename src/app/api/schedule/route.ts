@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
     const calendarId = process.env.GOOGLE_CALENDAR_ID;
-
     if (!clientId || !clientSecret || !refreshToken || !calendarId) {
       return Response.json(
         { error: "Calendar integration not configured." },
@@ -46,7 +45,10 @@ export async function POST(request: NextRequest) {
           dateTime: endDateTime.toISOString(),
           timeZone: "America/Los_Angeles",
         },
-        attendees: [{ email, displayName: name }],
+        attendees: [
+          { email, displayName: name },
+          { email: calendarId, displayName: "Miguel González" },
+        ],
         conferenceData: {
           createRequest: {
             requestId: `${Date.now()}`,
